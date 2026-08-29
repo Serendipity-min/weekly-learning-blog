@@ -1,0 +1,15 @@
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.tmp
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# 文档中间产物
+~$*
+*.docx.tmp
