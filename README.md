@@ -20,7 +20,7 @@ weekly-learning-blog/
     └── 2026-W35/           # 例：第 35 周
         ├── index.md        # 本周学习总结（周记）
         └── issues/         # 本周问题与知识沉淀
-            └── *.md
+            └── ai-agent-mcp-jlceda.md #AI 编程智能体（Antigravity / Codex / DeepSeek Harness）× MCP / 技能 × 硬件设计自动化
 ```
 
 ## 🎯 关于本博客
