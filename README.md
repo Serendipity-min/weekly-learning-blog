@@ -30,7 +30,6 @@ weekly-learning-blog/
   - 电路基础 / 模拟电路 / 数字电路 / PCB 设计（嘉立创 EDA）
   - AI 编程智能体（Antigravity / Codex / DeepSeek Harness）× MCP / 技能 × 硬件设计自动化
 - **更新频率**：每周一篇周记 + 视情况补充问题沉淀文章。
-- **写作工具**：周记来自课程 Word 讲义整理，经 DeepSeek Harness 智能体加工为结构化 Markdown。
 
 ## 🔧 维护指南（每周例行）
 
