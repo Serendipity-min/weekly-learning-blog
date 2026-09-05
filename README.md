@@ -20,7 +20,7 @@
 
 | 周次 | 日期 | 核心主题 | 周记总结 | 深度问题沉淀 |
 |:---|:---|:---|:---:|:---|
-| **[2026-W36](weekly/2026-W36/)** | 08-31 ~ 09-06 | STM32F407 GPIO · ESP8266 WiFi · 自研轻量 MQTT 3.1.1 协议栈 · 双向物联网云控 | [周记总结 (待定)](weekly/2026-W36/index.md) | [🔧 STM32F407+ESP8266 MQTT 物联网实战与按键解耦](weekly/2026-W36/issues/stm32f407-esp8266-mqtt-iot.md) |
+| **[2026-W36](weekly/2026-W36/)** | 08-31 ~ 09-06 | STM32F407 驱动体系 · 硬件调试三剑客 · 定时器/PWM电机驱动 · 自研 MQTT 协议栈 | [周记总结](weekly/2026-W36/index.md) | [🔧 STM32F407+ESP8266 MQTT 物联网实战与按键解耦](weekly/2026-W36/issues/stm32f407-esp8266-mqtt-iot.md) |
 | **[2026-W35](weekly/2026-W35/)** | 08-24 ~ 08-30 | 电路基础 · 模拟/数字电路 · PCB 制作 · AI×嘉立创EDA 工具链 | [周记总结](weekly/2026-W35/index.md) | [🔧 AI 智能体 + MCP + 技能驱动嘉立创 EDA](weekly/2026-W35/issues/ai-agent-mcp-jlceda.md) |
 
 ---
@@ -38,7 +38,7 @@ weekly-learning-blog/
     │   └── issues/         # 问题与知识沉淀
     │       └── ai-agent-mcp-jlceda.md
     └── 2026-W36/           # 第 36 周（STM32驱动与MQTT物联网）
-        ├── index.md        # 周记总结（待定）
+        ├── index.md        # 周记总结
         └── issues/         # 问题与知识沉淀
             └── stm32f407-esp8266-mqtt-iot.md
 ```
