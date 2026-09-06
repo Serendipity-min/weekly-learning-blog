@@ -1,0 +1,17 @@
+{
+  "baseline": [
+    "p/security-audit",
+    "p/secrets"
+  ],
+  "c": [
+    "p/c"
+  ],
+  "python": [
+    "p/python"
+  ],
+  "third_party": [
+    "https://github.com/0xdea/semgrep-rules",
+    "https://github.com/trailofbits/semgrep-rules",
+    "https://github.com/elttam/semgrep-rules"
+  ]
+}

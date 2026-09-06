@@ -1,0 +1,71 @@
+name: validate
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  semgrep-rules-validate:
+    name: semgrep-rules-validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+          persist-credentials: false
+      - name: prettier-check
+        uses: creyD/prettier_action@8c18391fdc98ed0d884c6345f03975edac71b8f0 # v4.6
+        with:
+          dry: True
+          prettier_options: --check **/*.{yaml,yml}
+      - name: install-python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.9
+      - name: install-semgrep
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install semgrep
+      - name: semgrep-validate
+        run: semgrep --config rules --validate
+      - name: semgrep-test
+        run: semgrep --test --test-ignore-todo
+      - name: semgrep-scan
+        run: semgrep --config rules rules
+      - name: clone-semgrep-rules
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: semgrep/semgrep-rules
+          path: tmp
+          fetch-depth: 1
+          persist-credentials: false
+      - name: install-python-dependencies
+        run: python -m pip install --upgrade pip && python -m pip install pyyaml jsonschema
+      - name: validate-metadata
+        run: python ./tmp/.github/scripts/validate-metadata.py -s ./tmp/metadata-schema.yaml.schm -f ../rules
+
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: zizmor
+        uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
+        with:
+          advanced-security: false

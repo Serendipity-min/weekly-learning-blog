@@ -1,0 +1,1 @@
+Load "E:\\stm32\\STM32F407_Template\\USER\\Objects\\STM32F407_Template.axf" 

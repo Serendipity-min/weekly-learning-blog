@@ -13,3 +13,23 @@ desktop.ini
 # 文档中间产物
 ~$*
 *.docx.tmp
+
+# Keil MDK 编译生成文件与中间产物
+**/OBJ/
+**/Objects/
+**/Listings/
+**/DebugConfig/
+*.o
+*.d
+*.crf
+*.axf
+*.htm
+*.lnp
+*.sct
+*.dep
+*.map
+*.lst
+*.build_log.htm
+*.uvguix.*
+*.uvopt
+JLinkLog.txt

@@ -1,0 +1,130 @@
+{"timestamp": 1787651362.0518305, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787651362.1414099, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787651362.2285304, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787651362.3128893, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787651362.399687, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787651362.4831307, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787651362.5668414, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787651712.9935508, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787651713.0859754, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787651713.1723275, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787651713.2560914, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787651713.343467, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787651713.4272652, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787651713.510559, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787651831.0207531, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787651831.1105468, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787651831.1987634, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787651831.281743, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787651831.3674297, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787651831.448433, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787651831.535911, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787652239.2588527, "event": "console_command", "command": "ping", "success": false}
+{"timestamp": 1787652240.342178, "event": "console_command", "command": "info", "success": false}
+{"timestamp": 1787652241.4338615, "event": "console_command", "command": "status", "success": false}
+{"timestamp": 1787652242.5214303, "event": "console_command", "command": "led get", "success": false}
+{"timestamp": 1787652243.6172273, "event": "console_command", "command": "led set on", "success": false}
+{"timestamp": 1787652244.714467, "event": "console_command", "command": "led get", "success": false}
+{"timestamp": 1787652245.800579, "event": "console_command", "command": "led set off", "success": false}
+{"timestamp": 1787652315.8134782, "event": "flash_project_firmware", "command": "ai_serial_console.bin", "success": false}
+{"timestamp": 1787652316.91365, "event": "console_command", "command": "ping", "success": false}
+{"timestamp": 1787652318.001136, "event": "console_command", "command": "info", "success": false}
+{"timestamp": 1787652319.084337, "event": "console_command", "command": "status", "success": false}
+{"timestamp": 1787652320.1718643, "event": "console_command", "command": "led get", "success": false}
+{"timestamp": 1787652321.2654712, "event": "console_command", "command": "led set on", "success": false}
+{"timestamp": 1787652322.3510036, "event": "console_command", "command": "led get", "success": false}
+{"timestamp": 1787652323.446917, "event": "console_command", "command": "led set off", "success": false}
+{"timestamp": 1787652324.5404832, "event": "console_command", "command": "led get", "success": false}
+{"timestamp": 1787652357.947239, "event": "console_command", "command": "ping", "success": false}
+{"timestamp": 1787652359.03045, "event": "console_command", "command": "info", "success": false}
+{"timestamp": 1787652360.126293, "event": "console_command", "command": "status", "success": false}
+{"timestamp": 1787652361.2179556, "event": "console_command", "command": "led get", "success": false}
+{"timestamp": 1787652362.3178873, "event": "console_command", "command": "led set on", "success": false}
+{"timestamp": 1787652363.4032266, "event": "console_command", "command": "led get", "success": false}
+{"timestamp": 1787652364.4973137, "event": "console_command", "command": "led set off", "success": false}
+{"timestamp": 1787652403.8099072, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787652403.901617, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787652403.9849122, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787652404.0764892, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787652404.1622272, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787652404.2437735, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787652404.3306944, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787652470.1725738, "event": "flash_project_firmware", "command": "ai_serial_console.bin", "success": false}
+{"timestamp": 1787652470.774532, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787652580.8650415, "event": "flash_project_firmware", "command": "ai_serial_console.bin", "success": false}
+{"timestamp": 1787652582.471657, "event": "console_command", "command": "info", "success": false}
+{"timestamp": 1787652691.9109743, "event": "console_command", "command": "ping", "success": false}
+{"timestamp": 1787652692.9992476, "event": "console_command", "command": "info", "success": false}
+{"timestamp": 1787652694.0947578, "event": "console_command", "command": "status", "success": false}
+{"timestamp": 1787652754.1232812, "event": "flash_project_firmware", "command": "ai_serial_console.bin", "success": false}
+{"timestamp": 1787652755.2129726, "event": "console_command", "command": "ping", "success": false}
+{"timestamp": 1787652756.308335, "event": "console_command", "command": "info", "success": false}
+{"timestamp": 1787652757.4058154, "event": "console_command", "command": "status", "success": false}
+{"timestamp": 1787652758.4953263, "event": "console_command", "command": "led set on", "success": false}
+{"timestamp": 1787652759.5806296, "event": "console_command", "command": "led get", "success": false}
+{"timestamp": 1787652760.673926, "event": "console_command", "command": "led set off", "success": false}
+{"timestamp": 1787652761.7745469, "event": "console_command", "command": "led get", "success": false}
+{"timestamp": 1787652793.6911612, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787652793.8237345, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787652793.9497411, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787652794.0731397, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787652794.1954868, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787652794.3179414, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787652794.43702, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787652861.101393, "event": "flash_project_firmware", "command": "ai_serial_console.bin", "success": false}
+{"timestamp": 1787652861.2356193, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787652861.364892, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787652861.4917476, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787652861.6141646, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787652861.7369125, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787652861.8591368, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787652861.9809222, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787652988.7061772, "event": "flash_project_firmware", "command": "ai_serial_console.bin", "success": false}
+{"timestamp": 1787652988.834436, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787652988.9622579, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787652989.0880759, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787652989.2108529, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787652989.3325455, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787652989.4547973, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787652989.5780747, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787652989.7003484, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653051.2178237, "event": "flash_project_firmware", "command": "ai_serial_console.bin", "success": true}
+{"timestamp": 1787653051.3475068, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787653051.4740326, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787653051.601186, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787653051.7248006, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653051.8488538, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787653051.9716654, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653052.0957203, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787653052.217923, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653079.2020836, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787653079.2198339, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787653079.234963, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787653079.24641, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653079.2573388, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787653079.2682745, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653079.2763522, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787653085.505597, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787653085.5260518, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787653085.5401971, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787653085.550769, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653085.5598335, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787653085.5730498, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653085.5846262, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787653085.5953321, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653105.9719076, "event": "flash_project_firmware", "command": "ai_serial_console.bin", "success": true}
+{"timestamp": 1787653106.1099205, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787653106.1318085, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787653106.1470666, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787653106.1586926, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787653106.1724958, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653106.1854992, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1787653106.1972513, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653110.8891356, "event": "console_command", "command": "ping", "success": true}
+{"timestamp": 1787653110.9089994, "event": "console_command", "command": "info", "success": true}
+{"timestamp": 1787653110.9251091, "event": "console_command", "command": "status", "success": true}
+{"timestamp": 1787653110.935794, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653110.9479523, "event": "console_command", "command": "led set on", "success": true}
+{"timestamp": 1787653110.9590404, "event": "console_command", "command": "led get", "success": true}
+{"timestamp": 1787653110.9709501, "event": "console_command", "command": "led set off", "success": true}
+{"timestamp": 1788172829.0869057, "event": "flash_project_firmware", "command": "ai_serial_console.bin", "success": true}

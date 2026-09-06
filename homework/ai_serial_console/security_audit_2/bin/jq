@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Windows 版 jq 输出 CRLF；扫描脚本按 Unix 行尾消费规则集键，故在审计范围内统一为 LF。
+set -o pipefail
+"/c/Users/Serendipity/AppData/Local/Microsoft/WinGet/Packages/jqlang.jq_Microsoft.Winget.Source_8wekyb3d8bbwe/jq.exe" "$@" | tr -d '\r'
