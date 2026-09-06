@@ -26,25 +26,25 @@
 本项目在原有 TB6612 电机调速工程的基础上，扩展了 **0.96 寸 OLED（I2C）实时参数显示屏**、**TIM4 正交编码器 4 倍频硬件测速** 与 **ADC 电池母线电压采样监控**，构成了一个具备感知、显示、执行三位一体的闭环电机驱动原型系统。
 
 ```mermaid
-graph TD
-    subgraph 供电系统
-        BAT[7.4V 动力锂电池] -->|动力输入 VM| DRV[TB6612 驱动模块]
-        BAT -->|分压电阻网络 10k:1k| ADC_PIN[ADC 端子 1/11 VM]
-        USB[PC 5V USB] -->|LDO 3.3V| MCU[STM32F407 核心板]
+flowchart TD
+    subgraph Power["供电系统"]
+        BAT["7.4V 动力锂电池"] -->|"动力输入 VM"| DRV["TB6612 驱动模块"]
+        BAT -->|"分压网络 (10k:1k)"| ADC_PIN["ADC 端子 (1/11 VM)"]
+        USB["PC 5V USB"] -->|"LDO 3.3V"| MCU["STM32F407 核心板"]
     end
 
-    subgraph 驱动与执行
-        DRV -->|A01/A02 动力输出| MOTOR[MG310 减速电机]
-        MOTOR -->|同轴双路霍尔| ENC[13 PPR 编码器]
+    subgraph Drive["驱动与执行"]
+        DRV -->|"A01/A02 动力输出"| MOTOR["MG310 减速电机"]
+        MOTOR -->|"同轴双路霍尔"| ENC["13 PPR 编码器"]
     end
 
-    subgraph STM32F407 控制核心
-        PWM_TIM[TIM3 硬件 10kHz PWM<br>PB0 / PB1] -->|PWMA / PWMB| DRV
-        DIR_GPIO[GPIO 推挽输出<br>PE0 / PE1] -->|AIN1 / AIN2| DRV
-        ENC_TIM[TIM4 正交编码器接口<br>PB6 / PB7] <--|E2A / E2B 脉冲| ENC
-        SYS_TIM[TIM6 100ms 中断] -->|速度差分换算| RPM_CALC[转速/转向解算]
-        ADC_MOD[ADC1 单通道软件滤波<br>PA5 / PA6] <--|采集分压模拟量| ADC_PIN
-        I2C_OLED[模拟 I2C 驱动<br>PB8 SCL / PB9 SDA] -->|局部显存刷新| OLED_DISP[0.96寸 OLED 屏幕]
+    subgraph Control["STM32F407 控制核心"]
+        PWM_TIM["TIM3 硬件 10kHz PWM (PB0/PB1)"] -->|"PWMA / PWMB"| DRV
+        DIR_GPIO["GPIO 推挽输出 (PE0/PE1)"] -->|"AIN1 / AIN2"| DRV
+        ENC_TIM["TIM4 正交编码器接口 (PB6/PB7)"] <--|"E2A / E2B 脉冲"| ENC
+        SYS_TIM["TIM6 100ms 中断"] -->|"速度差分换算"| RPM_CALC["转速与转向解算"]
+        ADC_MOD["ADC1 单通道软件滤波 (PA5/PA6)"] <--|"采集分压模拟量"| ADC_PIN
+        I2C_OLED["模拟 I2C 驱动 (PB8/PB9)"] -->|"局部显存刷新"| OLED_DISP["0.96寸 OLED 屏幕"]
     end
 ```
 
@@ -84,26 +84,48 @@ graph TD
 ## 三、 核心测量机理与数学推导
 
 ### 3.1 正交编码器 4 倍频测速推导
-MG310 电机配有 13 线（PPR）霍尔编码器，减速箱减速比为 $1:20$。
-- 电机内部转子旋转 1 圈，A相与 B相分别输出 13 个方波周期。
-- STM32 的 TIM4 开启双边沿正交计数（`TIM_EncoderMode_TI12`）：在 TI1 和 TI2 的上升沿与下降沿均计数，因此每个周期产生 4 个计数脉冲。
-- **电机转子转动 1 圈的脉冲数**：
-  $$P_{rotor} = 13 \times 4 = 52 \text{ pulses}$$
-- **减速箱输出轴转动 1 圈的脉冲数**：
-  $$P_{shaft} = 52 \times 20 = 1040 \text{ pulses}$$
-- 设定定时器 TIM6 产生 $T = 100\text{ms} = 0.1\text{s}$ 的定时中断。在每次中断触发时，读取计数器相对于上一次的差值 $\Delta \text{Pulse}$ 并清零：
-  $$\text{RPS} = \frac{\Delta \text{Pulse}}{1040 \times 0.1} = \frac{\Delta \text{Pulse}}{104}$$
-  $$\text{RPM} = \text{RPS} \times 60 = \frac{\Delta \text{Pulse} \times 600}{1040} = \frac{\Delta \text{Pulse} \times 15}{26}$$
-通过该整型公式，单片机可在不消耗浮点性能的前提下，以极高精度实时输出电机轴每分钟转速。
+
+MG310 电机配有 13 线（PPR）霍尔编码器，减速箱减速比为 1:20。
+
+1. **转子方波输出**：电机内部转子旋转 1 圈，A 相与 B 相分别输出 13 个完整方波周期。
+2. **TIM4 正交倍频**：开启双边沿正交计数（`TIM_EncoderMode_TI12`），在 TI1 与 TI2 的上升沿与下降沿均计数，每个方波周期产生 4 个计数脉冲。
+3. **脉冲分辨率计算**：
+   - 电机转子每转 1 圈脉冲数：$P_{\text{rotor}} = 13 \times 4 = 52$（脉冲/圈）
+   - 减速输出轴每转 1 圈脉冲数：$P_{\text{shaft}} = 52 \times 20 = 1040$（脉冲/圈）
+4. **转速解算数学模型**：
+   设定定时器 TIM6 产生 $T = 100\,\text{ms} = 0.1\,\text{s}$ 的定时中断。在每次中断触发时，读取计数器相对于上一次的脉冲增量 $\Delta P$ 并清零：
+
+$$
+\text{RPS} = \frac{\Delta P}{1040 \times 0.1} = \frac{\Delta P}{104}
+$$
+
+$$
+\text{RPM} = \text{RPS} \times 60 = \frac{\Delta P \times 600}{1040} = \frac{\Delta P \times 15}{26}
+$$
+
+通过该整型比例换算公式，单片机可在不消耗浮点性能的前提下，以极高效率实时解算出输出轴的每分钟实际转速（RPM）。
 
 ### 3.2 电池母线电压采样转换
-TB6612 调压模块板载一个分压网络，由 $R_1 = 10\text{k}\Omega$ 和 $R_2 = 1\text{k}\Omega$ 构成，将电池输入母线电压 $V_{IN}$ 降压为：
-$$V_{ADC} = V_{IN} \times \frac{R_2}{R_1 + R_2} = V_{IN} \times \frac{1\text{k}}{10\text{k} + 1\text{k}} = \frac{V_{IN}}{11}$$
-STM32F407 ADC1 配置为 12 位分辨率，参考基准电压 $V_{REF} = 3.3\text{V}$，量化步长为：
-$$\text{LSB} = \frac{3.3\text{V}}{4095} \approx 0.80586 \text{ mV}$$
-因此，由 ADC 采样值换算回真实电池母线电压的数学表达式为：
-$$V_{IN} = \text{ADC\_Val} \times \frac{3.3\text{V}}{4095} \times 11 = \text{ADC\_Val} \times \frac{36.3\text{V}}{4095}$$
-若 ADC 读到满量程 4095，则计算值为 $36.3\text{V}$。
+
+TB6612 调压模块板载分压电阻网络，由 $R_1 = 10\,\text{k}\Omega$ 和 $R_2 = 1\,\text{k}\Omega$ 构成，将电池输入母线电压 $V_{\text{IN}}$ 降压为：
+
+$$
+V_{\text{ADC}} = V_{\text{IN}} \times \frac{R_2}{R_1 + R_2} = V_{\text{IN}} \times \frac{1\,\text{k}\Omega}{10\,\text{k}\Omega + 1\,\text{k}\Omega} = \frac{V_{\text{IN}}}{11}
+$$
+
+STM32F407 ADC1 配置为 12 位分辨率，参考基准电压 $V_{\text{REF}} = 3.3\,\text{V}$，量化步长（LSB）为：
+
+$$
+\text{LSB} = \frac{3.3\,\text{V}}{4095} \approx 0.80586\,\text{mV}
+$$
+
+因此，由 ADC 原始采样码值（$ADC_{\text{RAW}}$，范围 0 ~ 4095）换算回真实电池母线电压的数学表达式为：
+
+$$
+V_{\text{IN}} = ADC_{\text{RAW}} \times \frac{3.3\,\text{V}}{4095} \times 11 = ADC_{\text{RAW}} \times \frac{36.3\,\text{V}}{4095}
+$$
+
+若 ADC 读到满量程 4095，则计算值为 $36.3\,\text{V}$。
 
 ---
 
