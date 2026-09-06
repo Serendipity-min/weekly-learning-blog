@@ -3,61 +3,40 @@
 #include "led.h"
 #include "key.h"
 #include "pwm.h"
-#include "oled.h"
-#include "encoder.h"
-#include "adc.h"
-#include "timer.h"
-#include <stdio.h>
 
 /**
- * @brief  主函数: 电机控制系统与 OLED 综合状态监视器
+ * @brief  主函数: 4按键控制电机正反转与加减速
  */
 int main(void)
 {
     uint8_t key = KEY_NONE;
-    MotorDir_t dir = MOTOR_DIR_STOP; /* 当前方向 */
-    uint16_t speed = 0;              /* 当前设定速度 (0 ~ 100%) */
-    uint8_t refresh_cnt = 0;         /* OLED 刷新计数 */
-    char str_buf[24];                /* 字符缓存 */
+    MotorDir_t dir = MOTOR_DIR_STOP; /* 当前运行方向 */
+    uint16_t speed = 0;              /* 当前速度百分比 (0 ~ 100%) */
 
-    /* 1. 初始化系统滴答延时 */
+    /* 1. 初始化系统滴答定时器 (提供精准毫秒延时) */
     SysTick_Init();
 
-    /* 2. 初始化按键与 LED 指示灯 */
+    /* 2. 初始化板载指示灯与 4 个控制按键 */
     LED_Init();
     Key_Init();
 
-    /* 3. 初始化电机 PWM 驱动 (TIM3 10kHz PWM) */
+    /* 3. 初始化 TB6612 电机驱动 (配置 TIM3 硬件 PWM 与方向 GPIO) */
     Motor_Init();
-
-    /* 4. 初始化硬件编码器接口 (TIM4: PB6=A相, PB7=B相) */
-    Encoder_Init();
-
-    /* 5. 初始化 100ms 测速高精度硬件定时器 (TIM6) */
-    Tim6_Init();
-
-    /* 6. 初始化电池电压采样 ADC1 通道 6 (PA6) */
-    Battery_ADC_Init();
-
-    /* 7. 初始化 0.96 寸 OLED 显示屏 (I2C: PB8, PB9) */
-    OLED_Init();
-    OLED_Clear();
-
-    /* 显示标题行 (第 0 行) */
-    OLED_ShowString(0, 0, "== MOTOR MONITOR ==");
 
     while (1)
     {
-        /* 扫描按键 */
+        /* 扫描按键事件 */
         key = Key_Scan();
+
         if (key != KEY_NONE)
         {
             switch (key)
             {
-                /* KEY_UP (PA0): 加速 */
+                /* KEY_UP (PA0): 电机加速 (每次递增 10%，最高 100%) */
                 case KEY_UP_PRES:
                     if (dir == MOTOR_DIR_STOP)
                     {
+                        /* 若当前处于停转状态，按下加速键默认以正转 30% 启动 */
                         dir = MOTOR_DIR_FORWARD;
                         speed = 30;
                     }
@@ -71,7 +50,7 @@ int main(void)
                     Motor_SetState(dir, speed);
                     break;
 
-                /* KEY0 (PE4): 减速 */
+                /* KEY0 (PE4): 电机减速 (每次递减 10%，减到 0% 自动刹车停机) */
                 case KEY0_PRES:
                     if (speed >= 10)
                         speed -= 10;
@@ -89,15 +68,17 @@ int main(void)
                     }
                     break;
 
-                /* KEY1 (PE3): 正转 / 启停切换 */
+                /* KEY1 (PE3): 正转运行 / 启停切换 */
                 case KEY1_PRES:
                     if (dir == MOTOR_DIR_FORWARD)
                     {
+                        /* 若当前正在正转，再次按下则刹车停止 */
                         dir = MOTOR_DIR_STOP;
                         Motor_Stop();
                     }
                     else
                     {
+                        /* 切换为正转模式；若初速为 0 则赋予 50% 启动速度 */
                         dir = MOTOR_DIR_FORWARD;
                         if (speed == 0)
                             speed = 50;
@@ -105,15 +86,17 @@ int main(void)
                     }
                     break;
 
-                /* KEY2 (PE2): 反转 / 启停切换 */
+                /* KEY2 (PE2): 反转运行 / 启停切换 */
                 case KEY2_PRES:
                     if (dir == MOTOR_DIR_REVERSE)
                     {
+                        /* 若当前正在反转，再次按下则刹车停止 */
                         dir = MOTOR_DIR_STOP;
                         Motor_Stop();
                     }
                     else
                     {
+                        /* 切换为反转模式；若初速为 0 则赋予 50% 启动速度 */
                         dir = MOTOR_DIR_REVERSE;
                         if (speed == 0)
                             speed = 50;
@@ -125,11 +108,17 @@ int main(void)
                     break;
             }
 
-            /* 更新板载状态指示灯 */
+            /* 更新板载 LED 指示灯状态:
+             * - LED0 (PF9): 电机运行指示灯 (运转中点亮，停止时熄灭)
+             * - LED1 (PF10): 电机反转指示灯 (反转时点亮，正转/停机时熄灭)
+             */
             if (dir != MOTOR_DIR_STOP && speed > 0)
             {
                 LED0_Set(1);
-                LED1_Set(dir == MOTOR_DIR_REVERSE ? 1 : 0);
+                if (dir == MOTOR_DIR_REVERSE)
+                    LED1_Set(1);
+                else
+                    LED1_Set(0);
             }
             else
             {
@@ -138,49 +127,7 @@ int main(void)
             }
         }
 
-        /* 周期刷新 OLED 实时信息 (约 100ms) */
-        refresh_cnt++;
-        if (refresh_cnt >= 10)
-        {
-            refresh_cnt = 0;
-
-            /* 第 2 行: 运转方向与设定占空比 */
-            if (dir == MOTOR_DIR_STOP || speed == 0)
-                sprintf(str_buf, "DIR:STOP  SPD:  0%%");
-            else if (dir == MOTOR_DIR_FORWARD)
-                sprintf(str_buf, "DIR:FWD   SPD:%3d%%", speed);
-            else
-                sprintf(str_buf, "DIR:REV   SPD:%3d%%", speed);
-            OLED_ShowString(0, 2, str_buf);
-
-            /* 第 4 行: 电机输出轴实测转速 (RPM) 及 100ms 脉冲计数 (C) */
-            int16_t raw_cnt = 0;
-            int16_t rpm = Encoder_GetSpeedRPM(&raw_cnt);
-            if (raw_cnt < 0) raw_cnt = -raw_cnt;
-            sprintf(str_buf, "RPM:%4d (C:%4d)", rpm, raw_cnt);
-            OLED_ShowString(0, 4, str_buf);
-
-            /* 第 6 行: 动力电池电压与负载电流 */
-            uint16_t raw_adc = 0;
-            float v_batt = Battery_GetVoltage(&raw_adc);
-            
-            /* 若 ADC 值 >= 3900 (折算电压 > 34V)，说明 PA6 悬空或接错到 3.3V/5V 电源轨 */
-            if (raw_adc >= 3900)
-            {
-                sprintf(str_buf, "V:NC(Check Wire)");
-            }
-            else
-            {
-                float est_i = 0.0f;
-                if (dir != MOTOR_DIR_STOP && speed > 0 && v_batt > 4.0f)
-                {
-                    est_i = 0.5f * (float)speed / 100.0f;
-                }
-                sprintf(str_buf, "V:%4.1fV  I:%4.2fA", v_batt, est_i);
-            }
-            OLED_ShowString(0, 6, str_buf);
-        }
-
+        /* 轮询周期延时 10ms */
         Delay_ms(10);
     }
 }
