@@ -31,6 +31,7 @@
 
 | 分类 | 项目 / 文档 | 核心功能与学习成果 | 链接 |
 |:---|:---|:---|:---:|
+| **零基础教程** | **STM32F407 电机调速与测速工程小白从零入门全解** | 针对初学者系统拆解：为什么不能直插电机、168MHz 时钟树 10kHz PWM 推导、TB6612 短路刹车、TIM4 编码器 4 倍频 1040PPR 转速公式、ADC 10k:1k 分压原理与状态机架构 | [零基础精讲](homework/STM32F407电机调速与测速监控工程小白从零入门全解.md) |
 | **实战工程** | **电机测速、OLED 监控与 ADC 采样综合系统** | TIM3 10kHz PWM、PE0/1 防外设冲突正反转、TIM4 硬件正交编码器 4 倍频测速、TIM6 100ms 周期 RPM 换算、0.96 寸 I2C OLED 动态多维监控、ADC1 母线电压采样 | [进入工程源码](homework/Motor_Encoder_OLED_Monitor/) |
 | **深度复盘** | **TB6612 电机测速/OLED/ADC 实战深度复盘报告** | 破除“电流 4095”硬件限制认知、PA6 板载 SPI Flash 冲突、碰触 GND 工频感应 4~10V 跳动解析、复位误入 ROM DFU Bootloader 排查及系统 4 大局限缺陷清单 | [阅读复盘报告](homework/TB6612电机测速与OLED监控系统实战复盘报告.md) |
 | **基础工程** | **PWM 呼吸灯与 TB6612 电机调速工程** | TIM3 10kHz 硬件 PWM、按键加减速调速状态机 (0~100%)、硬件短路刹车制动 (`Motor_Stop`)、板载 LED 运行状态指示 | [进入工程源码](homework/PWM_LED/) |
@@ -56,6 +57,7 @@ weekly-learning-blog/
 │           └── stm32f407-esp8266-mqtt-iot.md
 └── homework/               # 课后作业归档【0907 电机驱动与实验作业】
     ├── README.md           # 0907 作业总览与实验工程详细索引
+    ├── STM32F407电机调速...md       # 零基础精讲：小白从零理解 PWM/编码器/ADC/状态机全逻辑
     ├── Motor_Encoder_OLED_Monitor/  # 综合工程：电机调速 + 编码器测速 + OLED + ADC 监控
     ├── TB6612电机测速与OLED...md    # 深度复盘报告：硬件冲突/物理限制/故障排查/BUG清单
     ├── PWM_LED/            # 基础工程源码：TIM3 PWM 呼吸灯与 TB6612 电机驱动系统
