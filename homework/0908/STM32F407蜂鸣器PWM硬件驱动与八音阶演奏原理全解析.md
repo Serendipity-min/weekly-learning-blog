@@ -3,7 +3,7 @@
 > **归档日期**：2026年9月8日  
 > **工程项目**：[`PWM_waveform/`](PWM_waveform/)  
 > **核心硬件**：STM32F407ZGT6 开发板、板载无源蜂鸣器 (PF8)、S8050 NPN 驱动三极管、0.96 寸 I2C OLED 显示屏、独立用户按键 (KEY0, KEY1, KEY_UP)、LED0 (PF9)  
-> **主控芯片内核**：ARM Cortex-M4 @ 168 MHz (支持 FPU 与 DSP)
+> **主控芯片内核**：ARM Cortex-M4 @ 168 MHz (支持硬件 FPU 与 DSP)
 
 ---
 
@@ -69,27 +69,31 @@
 ## 二、 时钟树架构与 PWM 计数参数推导
 
 ### 2.1 APB1 定时器 84 MHz 时钟源推导
-STM32F407 采用外部 8.000 MHz 石英晶振（HSE）作为主基准源。系统启动后由主锁相环（Main PLL）进行倍频倍频，时钟链路如下：
+STM32F407 采用外部 8.000 MHz 石英晶振（HSE）作为主基准源。系统启动后由主锁相环（Main PLL）进行倍频，时钟链路如下：
 
 1. **PLL VCO 输入频率**：
-   $$f_{\text{VCO\_IN}} = \frac{f_{\text{HSE}}}{\text{PLL\_M}} = \frac{8\text{ MHz}}{8} = 1\text{ MHz}$$
+   $$f_{\text{in}} = \frac{f_{\text{HSE}}}{M} = \frac{8\text{ MHz}}{8} = 1\text{ MHz}$$
+   其中预分频系数 $M = 8$（对应寄存器位 `PLL_M`）。
 2. **PLL VCO 压控振荡频率**：
-   $$f_{\text{VCO\_OUT}} = f_{\text{VCO\_IN}} \times \text{PLL\_N} = 1\text{ MHz} \times 336 = 336\text{ MHz}$$
+   $$f_{\text{vco}} = f_{\text{in}} \times N = 1\text{ MHz} \times 336 = 336\text{ MHz}$$
+   其中倍频系数 $N = 336$（对应寄存器位 `PLL_N`）。
 3. **系统主频 (SYSCLK)**：
-   $$\text{SYSCLK} = \frac{f_{\text{VCO\_OUT}}}{\text{PLL\_P}} = \frac{336\text{ MHz}}{2} = 168\text{ MHz}$$
+   $$f_{\text{sys}} = \frac{f_{\text{vco}}}{P} = \frac{336\text{ MHz}}{2} = 168\text{ MHz}$$
+   其中系统主频分频系数 $P = 2$（对应寄存器位 `PLL_P`）。
 4. **低速外设总线 APB1 时钟 (PCLK1)**：
-   $$\text{PCLK1} = \frac{\text{HCLK}}{\text{APB1\_DIV}} = \frac{168\text{ MHz}}{4} = 42\text{ MHz}$$
+   $$f_{\text{pclk1}} = \frac{f_{\text{sys}}}{4} = \frac{168\text{ MHz}}{4} = 42\text{ MHz}$$
+   其中 APB1 预分频系数为 4。
 5. **TIM13 计数器输入时钟 ($f_{\text{TIM13}}$)**：
    依据 STM32F4xx 参考手册规定：**当 APB1 分频系数不为 1 时，送往 APB1 定时器的时钟自动硬件 2 倍频**：
-   $$f_{\text{TIM13}} = \text{PCLK1} \times 2 = 42\text{ MHz} \times 2 = 84\text{ MHz}$$
+   $$f_{\text{TIM13}} = f_{\text{pclk1}} \times 2 = 42\text{ MHz} \times 2 = 84\text{ MHz}$$
 
 ---
 
 ### 2.2 1 MHz 计数基准与预分频器 (PSC) 计算
 为了让音频频率计算直观且消除除法舍入误差，我们将定时器的预分频器配置为将 84 MHz 降频至标准的 **1 MHz**：
-$$f_{\text{cnt}} = \frac{f_{\text{TIM13}}}{\text{PSC} + 1} = 1\,000\,000\text{ Hz} = 1\text{ MHz}$$
+$$f_{\text{cnt}} = \frac{f_{\text{TIM13}}}{\text{PSC} + 1} = \frac{84\text{ MHz}}{83 + 1} = 1\text{ MHz}$$
 由此解出预分频寄存器（TIM_Prescaler）配置值：
-$$\text{PSC} = \frac{84\,000\,000}{1\,000\,000} - 1 = 84 - 1 = 83$$
+$$\text{PSC} = \frac{84\text{ MHz}}{1\text{ MHz}} - 1 = 84 - 1 = 83$$
 * **计数分辨率**：计数器每增加 1，刚好对应时间过去 $1\ \mu\text{s}$。
 
 ---
@@ -123,8 +127,8 @@ $$\text{Duty} = \frac{\text{CCR1}}{\text{ARR} + 1} \times 100\%$$
 在现代乐理标准（十二平均律）中，一个八度被等比划分为 12 个半音。若以国际标准基准音 $A4 = 440\text{ Hz}$ 为基准，任意两相邻半音之间的频率公比为：
 $$r = \sqrt[12]{2} \approx 1.059463094$$
 自然大调（Major Scale）的各级音程关系遵循经典的 **“全-全-半-全-全-全-半”** 规律，中音 C 调（C4 ~ C5）八个核心音符的理论计算频率如下：
-* 主音 $C4$：以 $A4 = 440\text{ Hz}$ 向下推算 9 个半音，得到理论频率 $f = 440 \times 2^{-9/12} \approx 261.63\text{ Hz}$（工程取整 $262\text{ Hz}$）；
-* 高八度主音 $C5$：频率严格等于 $C4$ 的 2 倍，即 $261.63 \times 2 = 523.25\text{ Hz}$（工程取整 $523\text{ Hz}$）。
+* 主音 $C4$：以 $A4 = 440\text{ Hz}$ 向下推算 9 个半音，理论频率为 $440 \times 2^{-9/12} \approx 261.63\text{ Hz}$，工程取整为 $262\text{ Hz}$；
+* 高八度主音 $C5$：频率严格等于 $C4$ 的 2 倍，即 $261.63 \times 2 = 523.25\text{ Hz}$，工程取整为 $523\text{ Hz}$。
 
 ---
 
@@ -135,16 +139,16 @@ $$\text{ARR} = \frac{1\,000\,000}{f} - 1,\quad \text{CCR1} = \frac{\text{ARR} + 
 
 八音阶完整参数速查对照如下：
 
-| 音名 (简谱) | 音阶标识 | 国际唱名 | 物理基频 ($f$) | 理论周期 ($T$) | 自动重装载值 ($\text{ARR}$) | 50% 比较值 ($\text{CCR1}$) | 音程步进 |
+| 音名 (简谱) | 音阶标识宏 | 国际唱名 | 物理基频 | 理论周期 | 自动重装载值 ARR | 50% 比较值 CCR1 | 音程步进 |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **1 (Do)** | `BEEP_NOTE_C4` | 多 | **262 Hz** | $3816.8\ \mu\text{s}$ | **3815** | **1908** | 主音 |
-| **2 (Re)** | `BEEP_NOTE_D4` | 来 | **294 Hz** | $3401.4\ \mu\text{s}$ | **3400** | **1700** | 全音 |
-| **3 (Mi)** | `BEEP_NOTE_E4` | 米 | **330 Hz** | $3030.3\ \mu\text{s}$ | **3029** | **1515** | 全音 |
-| **4 (Fa)** | `BEEP_NOTE_F4` | 发 | **349 Hz** | $2865.3\ \mu\text{s}$ | **2864** | **1432** | 半音 |
-| **5 (Sol)** | `BEEP_NOTE_G4` | 唆 | **392 Hz** | $2551.0\ \mu\text{s}$ | **2550** | **1275** | 全音 |
-| **6 (La)** | `BEEP_NOTE_A4` | 拉 | **440 Hz** | $2272.7\ \mu\text{s}$ | **2271** | **1136** | 全音(基准) |
-| **7 (Si)** | `BEEP_NOTE_B4` | 西 | **494 Hz** | $2024.3\ \mu\text{s}$ | **2023** | **1012** | 全音 |
-| **1̇ (High Do)**| `BEEP_NOTE_C5` | 高音多 | **523 Hz** | $1912.0\ \mu\text{s}$ | **1911** | **956** | 半音(倍频) |
+| **1 (Do)** | `BEEP_NOTE_C4` | 多 | **262 Hz** | 3816.8 μs | **3815** | **1908** | 主音 |
+| **2 (Re)** | `BEEP_NOTE_D4` | 来 | **294 Hz** | 3401.4 μs | **3400** | **1700** | 全音 |
+| **3 (Mi)** | `BEEP_NOTE_E4` | 米 | **330 Hz** | 3030.3 μs | **3029** | **1515** | 全音 |
+| **4 (Fa)** | `BEEP_NOTE_F4` | 发 | **349 Hz** | 2865.3 μs | **2864** | **1432** | 半音 |
+| **5 (Sol)** | `BEEP_NOTE_G4` | 唆 | **392 Hz** | 2551.0 μs | **2550** | **1275** | 全音 |
+| **6 (La)** | `BEEP_NOTE_A4` | 拉 | **440 Hz** | 2272.7 μs | **2271** | **1136** | 全音 (基准) |
+| **7 (Si)** | `BEEP_NOTE_B4` | 西 | **494 Hz** | 2024.3 μs | **2023** | **1012** | 全音 |
+| **1̇ (High Do)**| `BEEP_NOTE_C5` | 高音多 | **523 Hz** | 1912.0 μs | **1911** | **956** | 半音 (高八度) |
 
 ---
 
@@ -154,16 +158,16 @@ $$\text{ARR} = \frac{1\,000\,000}{f} - 1,\quad \text{CCR1} = \frac{\text{ARR} + 
 
 ```mermaid
 graph LR
-    A[音符发声态: CCR1=50%] --> |维持 160ms| B[听觉音高完整识别]
-    B --> C[静音吐音态: CCR1=0%]
-    C --> |休止 30ms| D[机械振膜能量衰减释放]
+    A["音符发声态: CCR1=50%"] --> |维持 160ms| B["听觉音高完整识别"]
+    B --> C["静音吐音态: CCR1=0%"]
+    C --> |休止 30ms| D["机械振膜能量衰减释放"]
     D --> |切换下一音阶 ARR| A
 ```
 
 ### 4.1 发声持续时间 (Tone Duration) 的听觉建立
 在心理声学中，人耳基底膜与听觉神经对单一稳定频率的音高识别需要一定的积分时间：
 * 若发声时间小于 20 ms，人耳只能听到机械“噼啪”声而无法辨识音调；
-* 本工程选取 **$T_{\text{sound}} = 160\text{ ms}$**，既保证了每一个音符音调饱满、响度均衡，又赋予整个八音阶轻快利落的活泼节拍。
+* 本工程选取发声时间 $T_{\text{sound}} = 160\text{ ms}$，既保证了每一个音符音调饱满、响度均衡，又赋予整个八音阶轻快利落的活泼节拍。
 
 ### 4.2 顿音休止时间 (Silent Interval) 的抑振机理
 若在演奏过程中前一个音阶刚结束就立即载入下一个音阶的频率，蜂鸣器的金属弹片由于机械惯性仍存在残余受迫振动，会导致前后两个音调在过渡期产生严重的杂音混叠和拖尾模糊（Slur 黏连）。
@@ -174,7 +178,7 @@ graph LR
 
 ### 4.3 循环播放算法流程图与时序设计
 单次完整八音阶演奏的总周期时间为：
-$$T_{\text{total}} = 8 \times (T_{\text{sound}} + T_{\text{pause}}) = 8 \times (160\text{ ms} + 30\text{ ms}) = 1520\text{ ms} = 1.52\text{ 秒}$$
+$$T_{\text{total}} = 8 \times (T_{\text{sound}} + T_{\text{pause}}) = 8 \times (160\text{ ms} + 30\text{ ms}) = 1520\text{ ms} = 1.52\text{ s}$$
 
 循环控制代码实现：
 ```c

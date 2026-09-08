@@ -134,7 +134,7 @@
 - **调研结论**：两条路线——官方 **SKILL 路线**（easyeda-api-skill + easyeda-enhanced-schematic-skill，画原理图首选）与 **MCP 路线**（jlcmcp，59 个工具，PCB/原理图全自动化）。
 - **安装落地**（08-27）：三个仓库克隆到 `E:\嘉立创EDA\ai-tools`，jlcmcp 编译 + 冒烟测试 73/75 通过；技能用 junction 挂载到 Antigravity 全局技能目录；`mcp_config.json` 注册 `jlceda`；桥服务器端口 **49620-49629** 由 EDA 扩展自动扫描连接。
 - **架构**：`智能体 →(MCP/SKILL)→ 桥服务器 →(WebSocket)→ Run API Gateway 扩展 → 嘉立创 EDA 专业版`。
-- **工程产出**：`ProPrj_USB拓展坞-正_2026-08-27.epro2`、`ProPrj_无接触式电笔_0826马喜乐.epro2`。
+- **工程产出**：`ProPrj_USB拓展坞-正_2026-08-27.epro2`、`ProPrj_无接触式电笔.epro2`。
 
 ---
 
